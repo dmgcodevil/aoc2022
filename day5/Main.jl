@@ -13,11 +13,16 @@ function add!(s::Stack, v::Vector{Char})
     append!(s.crates, v)
 end
 
-function move!(from::Stack, to::Stack, n::Int)
-    add!(to, reverse(remove_last!(from, n)))
+function move!(from::Stack, to::Stack, n::Int, rev=true)
+    crates = remove_last!(from, n)
+    if rev
+        reverse!(crates)
+    end
+    add!(to, crates)
 end
 
-function part1()
+
+function part1(rev=true)
     height = 8
     weight = 9
     step = 4 # from current label to the next
@@ -47,7 +52,7 @@ function part1()
             amount = parse(Int, parts[2])
             from = parse(Int, parts[4])
             to = parse(Int, parts[6])
-            move!(stacks[from], stacks[to], amount)
+            move!(stacks[from], stacks[to], amount, rev)
         end
     end
     res = ""
@@ -57,4 +62,9 @@ function part1()
     println(res)
 end
 
-part1()
+function part2()
+    part1(false)
+end
+
+#part1()
+part2()
