@@ -11,15 +11,17 @@ function can_move(from::Char, to::Char)::Bool
     return from == 'S' || from + 1 == to || from >= to
 end
 
-function find_start(grid::Vector{Vector{Char}})
+function find_start(grid::Vector{Vector{Char}},
+    points::Set{Char})::Vector{Vector{Int}}
+    res = Vector{Vector{Int}}()
     for i in eachindex(grid)
         for j in eachindex(grid[i])
-            if grid[i][j] == 'S'
-                return (i, j)
+            if in(grid[i][j], points)
+                append!(res, [[i, j]])
             end
         end
     end
-    throw(DomainError((i, j), "'S' not found"))
+    return res
 end
 
 function load(path)::Vector{Vector{Char}}
@@ -41,15 +43,13 @@ function input()
     return load("input.txt")
 end
 
-function part1()
-    grid = input()
+function shortest(grid::Vector{Vector{Char}}, start::Array{Int})::Int
     m = length(grid)
     n = length(grid[1])
     visited = zeros(Int, m, n)
     for row in eachrow(visited)
         fill!(row, typemax(Int))
     end
-    start = find_start(grid)
     visited[start[1], start[2]] = 0
     q = Queue{Array{Int}}()
     enqueue!(q, [start[1], start[2], 0])
@@ -62,8 +62,7 @@ function part1()
             j = p[2]
             steps = p[3]
             if grid[i][j] == 'E'
-                println(steps)
-                return
+                return steps
             end
             for move in moves
                 x = i + move[1]
@@ -77,7 +76,26 @@ function part1()
             size -= 1
         end
     end
-
+    return -1
 end
 
-part1()
+function part1()
+    grid = input()
+    for s in find_start(grid, Set{Char}(['S']))
+        println(shortest(grid, s))
+    end
+end
+
+function part2()
+    grid = input()
+    res = typemax(Int)
+    for s in find_start(grid, Set{Char}(['S', 'a']))
+        tmp = shortest(grid, s)
+        if tmp != -1
+            res = min(res, tmp)
+        end
+    end
+    println(res)
+end
+
+part2()
