@@ -1,22 +1,23 @@
 mutable struct Monkey
     id::Int
-    items::Vector{Int}
+    items::Vector{Int128}
     operation
     test
     onTrue
     onFalse
     buf::Vector{Int}
-    total::Int
+    total::Int128	
     Monkey(id::Int, items::Vector{Int}, operation,
         test, onTrue, onFalse) = new(id, items, operation, test,
         onTrue, onFalse, [], 0)
 end
 
+lcm = 9699690
 
 function process(m::Monkey)
     m.total += length(m.items)
     for i in m.items
-        n = convert(Int, floor(m.operation(i) / 3))
+        n = convert(Int128, floor(m.operation(i) % lcm)) # part1 / 3
         if m.test(n)
             m.onTrue(n)
         else
@@ -26,14 +27,13 @@ function process(m::Monkey)
     m.items = []
 end
 
-function add_to_buf(m::Monkey, i::Int)
+function add_to_buf(m::Monkey, i::Int128)
     append!(m.items, [i])
 end
 
 function complete(m::Monkey)
     #m.items = []
 end
-
 
 function input()
     monkeys = Vector{Monkey}([
@@ -134,13 +134,14 @@ end
 
 function part1()
     monkeys = input()
-    for _ in 1:20
+    for _ in 1:10000
         for m in monkeys
             process(m)
         end
-        for m in monkeys
-            complete(m)
-        end
+    end
+
+    for m in monkeys
+        println(m.items)
     end
 
     scores = collect(sort(map(x -> x.total, monkeys)))
@@ -149,3 +150,5 @@ function part1()
 end
 
 part1()
+
+
