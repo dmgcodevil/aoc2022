@@ -103,4 +103,54 @@ function part1()
     end
 end
 
-part1()
+function part2()
+    points = load("input.txt")
+
+    min_x = typemin(Int)
+    max_y = 0
+
+    for p in points
+        max_y = max(max_y, p.y)
+    end
+    max_y += 2
+
+    println("min x: " * string(min_x))
+    println("max y: " * string(max_y))
+
+    count = 0
+
+    while (true)
+        p = Point(500, 0)
+        while (true)
+            proceed = false
+            for m in moves
+                next = move(p, m[1], m[2])
+                # println("p: " * string(p) * "next: " * string(next))
+                if !in(next, points) && next.y != max_y
+                    # println("next: not in" * string(next))
+                    p = next
+                    proceed = true
+                    break
+                end
+            end
+            if !proceed
+                # println("settle: " * string(p))
+                push!(points, p)
+                count += 1
+                if p.x == 500 && p.y == 0
+                    println("res2: " * string(count))
+                return
+                end
+                break
+            end
+            # if fall(p, min_x, max_y)
+            #     # println("fall: " * string(p))
+            #     println("res: " * string(count))
+            #     return
+            # end
+
+        end
+    end
+end
+
+part2()
